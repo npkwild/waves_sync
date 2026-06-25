@@ -1,0 +1,201 @@
+{
+ "actions": [],
+ "autoname": "WS-.YY.-.MM.-.####",
+ "creation": "2026-06-25 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "run_datetime",
+  "triggered_by",
+  "column_break_header",
+  "mode",
+  "status",
+  "filter_details_section",
+  "from_date",
+  "to_date",
+  "column_break_filter",
+  "company",
+  "result_section",
+  "total_invoices",
+  "total_line_items",
+  "column_break_result",
+  "file_attachment",
+  "api_response_section",
+  "api_response_code",
+  "column_break_api_response",
+  "api_response_message",
+  "error_log_section",
+  "error_log",
+  "json_preview_section",
+  "json_preview",
+  "invoice_rows_section",
+  "invoice_rows"
+ ],
+ "fields": [
+  {
+   "fieldname": "run_datetime",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Run Datetime",
+   "read_only": 1
+  },
+  {
+   "fieldname": "triggered_by",
+   "fieldtype": "Data",
+   "label": "Triggered By",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_header",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "mode",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Mode",
+   "options": "Download\nAPI Push\nBoth\nFile Upload\nTest"
+  },
+  {
+   "bold": 1,
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Status",
+   "options": "Running\nSuccess\nFailed\nPartial"
+  },
+  {
+   "fieldname": "filter_details_section",
+   "fieldtype": "Section Break",
+   "label": "Filter Details"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_filter",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Data",
+   "label": "Company",
+   "read_only": 1
+  },
+  {
+   "fieldname": "result_section",
+   "fieldtype": "Section Break",
+   "label": "Result"
+  },
+  {
+   "fieldname": "total_invoices",
+   "fieldtype": "Int",
+   "label": "Total Invoices",
+   "read_only": 1
+  },
+  {
+   "fieldname": "total_line_items",
+   "fieldtype": "Int",
+   "label": "Total Line Items",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_result",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "file_attachment",
+   "fieldtype": "Attach",
+   "label": "JSON File"
+  },
+  {
+   "depends_on": "eval:['API Push','Both'].includes(doc.mode)",
+   "fieldname": "api_response_section",
+   "fieldtype": "Section Break",
+   "label": "API Response"
+  },
+  {
+   "fieldname": "api_response_code",
+   "fieldtype": "Int",
+   "label": "Response Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_api_response",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_response_message",
+   "fieldtype": "Data",
+   "label": "Response Message",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "error_log_section",
+   "fieldtype": "Section Break",
+   "label": "Error Log"
+  },
+  {
+   "fieldname": "error_log",
+   "fieldtype": "Long Text",
+   "label": "Error Log",
+   "read_only": 1
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "json_preview_section",
+   "fieldtype": "Section Break",
+   "label": "JSON Preview"
+  },
+  {
+   "fieldname": "json_preview",
+   "fieldtype": "Long Text",
+   "label": "JSON Preview",
+   "read_only": 1
+  },
+  {
+   "fieldname": "invoice_rows_section",
+   "fieldtype": "Section Break",
+   "label": "Invoice Rows"
+  },
+  {
+   "fieldname": "invoice_rows",
+   "fieldtype": "Table",
+   "label": "Invoice Rows",
+   "options": "Waves Sync Invoice Row"
+  }
+ ],
+ "links": [],
+ "modified": "2026-06-25 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waves Sync",
+ "name": "Waves Sync Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

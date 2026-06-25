@@ -1,0 +1,123 @@
+{
+ "actions": [],
+ "creation": "2026-06-25 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "export_configuration_section",
+  "default_company",
+  "default_from_date",
+  "column_break_export",
+  "default_to_date",
+  "include_zero_outstanding",
+  "delivery_section",
+  "delivery_mode",
+  "waves_api_section",
+  "waves_api_url",
+  "api_auth_header",
+  "column_break_api",
+  "waves_api_key",
+  "api_timeout"
+ ],
+ "fields": [
+  {
+   "fieldname": "export_configuration_section",
+   "fieldtype": "Section Break",
+   "label": "Export Configuration"
+  },
+  {
+   "fieldname": "default_company",
+   "fieldtype": "Link",
+   "label": "Default Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "default_from_date",
+   "fieldtype": "Date",
+   "label": "Default From Date"
+  },
+  {
+   "fieldname": "column_break_export",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_to_date",
+   "fieldtype": "Date",
+   "label": "Default To Date"
+  },
+  {
+   "default": "0",
+   "fieldname": "include_zero_outstanding",
+   "fieldtype": "Check",
+   "label": "Include invoices with zero outstanding"
+  },
+  {
+   "fieldname": "delivery_section",
+   "fieldtype": "Section Break",
+   "label": "Delivery"
+  },
+  {
+   "default": "Download JSON",
+   "fieldname": "delivery_mode",
+   "fieldtype": "Select",
+   "label": "Delivery Mode",
+   "options": "Download JSON\nPush to Waves API\nBoth"
+  },
+  {
+   "depends_on": "eval:['Push to Waves API','Both'].includes(doc.delivery_mode)",
+   "fieldname": "waves_api_section",
+   "fieldtype": "Section Break",
+   "label": "Waves API Configuration"
+  },
+  {
+   "fieldname": "waves_api_url",
+   "fieldtype": "Data",
+   "label": "Waves API Endpoint URL"
+  },
+  {
+   "default": "X-API-Key",
+   "fieldname": "api_auth_header",
+   "fieldtype": "Data",
+   "label": "Auth Header Name"
+  },
+  {
+   "fieldname": "column_break_api",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "waves_api_key",
+   "fieldtype": "Password",
+   "label": "API Key"
+  },
+  {
+   "default": "30",
+   "fieldname": "api_timeout",
+   "fieldtype": "Int",
+   "label": "Timeout (seconds)"
+  }
+ ],
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-06-25 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Waves Sync",
+ "name": "Waves Sync Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

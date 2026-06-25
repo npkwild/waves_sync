@@ -1,0 +1,4 @@
+/* Waves Sync — invoice row status tints */
+.grid-body tr.ws-row-success td { background-color: #f0fdf4 !important; }
+.grid-body tr.ws-row-error   td { background-color: #fef2f2 !important; }
+.grid-body tr.ws-row-pending td { background-color: #fefce8 !important; }
