@@ -13,6 +13,7 @@ frappe.ui.form.on("Waves Sync Log", {
 
 	render_sync_button(frm) {
 		frm.remove_custom_button(__("Sync Invoices"));
+		frm.remove_custom_button(__("Create Records"));
 		if (frm.is_new() || !frm.doc.file_attachment) return;
 
 		const btn = frm.add_custom_button(__("Sync Invoices"), () => {
@@ -20,7 +21,7 @@ frappe.ui.form.on("Waves Sync Log", {
 				method: "waves_sync.api.sync.process_log_file",
 				args: { log_name: frm.doc.name },
 				freeze: true,
-				freeze_message: __("Reading file and processing invoices…"),
+				freeze_message: __("Reading file and processing…"),
 				callback(r) {
 					if (!r.exc && r.message) {
 						const { summary, status } = r.message;
@@ -34,6 +35,21 @@ frappe.ui.form.on("Waves Sync Log", {
 			});
 		});
 		btn.addClass("btn-primary");
+
+		frm.add_custom_button(__("Create Records"), () => {
+			frappe.call({
+				method: "waves_sync.api.sync.create_records",
+				args: { log_name: frm.doc.name },
+				freeze: true,
+				freeze_message: __("Creating records…"),
+				callback(r) {
+					if (!r.exc && r.message) {
+						frappe.msgprint(r.message.summary);
+						frm.reload_doc();
+					}
+				},
+			});
+		});
 	},
 
 	color_invoice_rows(frm) {
