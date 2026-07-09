@@ -6,7 +6,22 @@ app_email = "nakul@faircodetech.com"
 app_license = "mit"
 
 fixtures = [
-	{"dt": "Custom Field", "filters": [["module", "=", "Waves Sync"]]},
+	{"dt": "Custom Field", "filters": [
+        ["name", "in", [
+            "Sales Invoice-custom_waves_invoice_number",
+            "Customer-custom_customer_code"
+        ]]]},
+        {
+            "dt": "Property Setter",
+    "filters":[
+        ["name", "in",[
+            "Sales Invoice-main-naming_rule",
+            "Sales Invoice-main-autoname",
+            "Sales Invoice-main-field_order"
+
+        ]]
+    ]
+        },
 ]
 
 doctype_js = {
