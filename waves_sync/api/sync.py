@@ -75,6 +75,13 @@ def _resolve_item(code):
 	code = (code or "").strip()
 	return code if code and frappe.db.exists("Item", code) else None
 
+def _get_sales_tax_template(company):
+	return (
+		frappe.db.get_value("Sales Taxes and Charges Template",
+			{"company": company, "is_default": 1}, "name")
+		or frappe.db.get_value("Sales Taxes and Charges Template",
+			{"company": company, "name": ["like", "Output GST In-state%"]}, "name")
+	)
 
 def _create_one_invoice(inv, company):
 	invoice_number = (inv.get("invoice_number") or "").strip()
@@ -95,10 +102,14 @@ def _create_one_invoice(inv, company):
 		if not item_code:
 			missing.append(line.get("product_code") or "?")
 			continue
+		qty = _to_num(line.get("qty")) or 1
+		taxable = _to_num(line.get("tax_base_amount"))   # per-line net (discount already applied)
+		qty = _to_num(line.get("qty")) or 1
+		taxable = _to_num(line.get("tax_base_amount"))   # per-line net (discount already applied)
 		row = {
 			"item_code": item_code,
-			"qty": _to_num(line.get("qty")) or 1,
-			"rate": _to_num(line.get("unit_rate")),
+			"qty": qty,
+			"rate": taxable / qty if qty else taxable,     # per-unit net → +18% = gross_total
 		}
 		uom = (line.get("unit") or "").strip()
 		if uom and frappe.db.exists("UOM", uom):
@@ -118,6 +129,14 @@ def _create_one_invoice(inv, company):
 		doc.po_no = inv.get("sales_order_number") or ""
 		for row in items:
 			doc.append("items", row)
+
+		# attach GST template, then run the same calc the UI runs
+		tax_template = _get_sales_tax_template(company)
+		if tax_template:
+			doc.taxes_and_charges = tax_template
+			doc.set_taxes()                         # pull template's tax rows onto the doc
+		doc.run_method("calculate_taxes_and_totals")  # the built-in the UI calls
+
 		doc.flags.ignore_permissions = True
 		doc.insert()
 		frappe.db.commit()
