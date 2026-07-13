@@ -5,6 +5,12 @@ app_description = "Export ERPNext sales invoice data to Waves application JSON f
 app_email = "nakul@faircodetech.com"
 app_license = "mit"
 
+doc_events = {
+    "Sales Invoice": {
+        "autoname": "waves_sync.api.sync.si_autoname",
+    }
+}
+
 fixtures = [
 	{"dt": "Custom Field", "filters": [
         ["name", "in", [
@@ -15,8 +21,6 @@ fixtures = [
             "dt": "Property Setter",
     "filters":[
         ["name", "in",[
-            "Sales Invoice-main-naming_rule",
-            "Sales Invoice-main-autoname",
             "Sales Invoice-main-field_order"
 
         ]]
