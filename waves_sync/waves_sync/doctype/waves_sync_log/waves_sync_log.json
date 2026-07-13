@@ -8,6 +8,7 @@
  "field_order": [
   "run_datetime",
   "triggered_by",
+  "import_type",
   "column_break_header",
   "mode",
   "status",
@@ -174,10 +175,16 @@
    "fieldtype": "Table",
    "label": "Invoice Rows",
    "options": "Waves Sync Invoice Row"
+  },
+  {
+   "fieldname": "import_type",
+   "fieldtype": "Select",
+   "label": "Import type",
+   "options": "Sales Invoice\nPayment Entry"
   }
  ],
  "links": [],
- "modified": "2026-07-08 15:29:03.109668",
+ "modified": "2026-07-13 12:59:51.698106",
  "modified_by": "Administrator",
  "module": "Waves Sync",
  "name": "Waves Sync Log",

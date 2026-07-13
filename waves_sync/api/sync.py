@@ -340,6 +340,11 @@ def _create_one_payment(pay, company):
 		msg = str(e)[:150]
 		# closed-period and similar submit failures land here → skip + log
 		return "skipped", f"{invoice_number}: {msg}"
+
+def si_autoname(doc, method=None):
+    """Name sync-created invoices after their Waves number; leave manual invoices to the series."""
+    if getattr(doc, "custom_waves_invoice_number", None):
+        doc.name = doc.custom_waves_invoice_number.strip()
 	
 def _run_payment_creation(log_name):
 	"""Background job: create Payment Entries for every collection row in the log's file."""
