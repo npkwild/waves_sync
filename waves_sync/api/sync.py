@@ -2,6 +2,8 @@ import json
 
 import frappe
 from frappe import _
+from frappe.model.naming import make_autoname
+
 
 
 def _read_file_content(file_url):
@@ -342,9 +344,13 @@ def _create_one_payment(pay, company):
 		return "skipped", f"{invoice_number}: {msg}"
 
 def si_autoname(doc, method=None):
-    """Name sync-created invoices after their Waves number; leave manual invoices to the series."""
-    if getattr(doc, "custom_waves_invoice_number", None):
-        doc.name = doc.custom_waves_invoice_number.strip()
+    """Waves-imported invoices are named after their Waves number;
+    manual invoices fall back to the standard naming series."""
+    waves_no = (getattr(doc, "custom_waves_invoice_number", None) or "").strip()
+    if waves_no:
+        doc.name = waves_no
+    else:
+        doc.name = make_autoname(doc.naming_series or "ACC-SINV-.YYYY.-")
 	
 def _run_payment_creation(log_name):
 	"""Background job: create Payment Entries for every collection row in the log's file."""

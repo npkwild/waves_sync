@@ -8,6 +8,7 @@ app_license = "mit"
 doc_events = {
     "Sales Invoice": {
         "autoname": "waves_sync.api.sync.si_autoname",
+        "after_insert": "waves_sync.sales_invoice.set_custom_id",
     }
 }
 
@@ -15,13 +16,14 @@ fixtures = [
 	{"dt": "Custom Field", "filters": [
         ["name", "in", [
             "Sales Invoice-custom_waves_invoice_number",
-            "Customer-custom_customer_code"
+            "Customer-custom_customer_code",
+            "Sales Invoice-custom_id",
         ]]]},
         {
             "dt": "Property Setter",
     "filters":[
         ["name", "in",[
-            "Sales Invoice-main-field_order"
+            "Sales Invoice-main-field_order",
 
         ]]
     ]
