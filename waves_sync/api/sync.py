@@ -88,10 +88,16 @@ def _get_sales_tax_template(company):
 def _create_one_invoice(inv, company):
 	invoice_number = (inv.get("invoice_number") or "").strip()
 
-	if invoice_number and frappe.db.exists(
-		"Sales Invoice", {"custom_waves_invoice_number": invoice_number}
-	):
-		return "skipped", f"{invoice_number}: already imported"
+	if invoice_number: 
+		# already tagged → skip
+		if frappe.db.exists("Sales Invoice", {"custom_waves_invoice_number": invoice_number}):
+			return "skipped", f"{invoice_number}: already imported"
+		# exists by name (backup invoice) but untagged → tag it so payments can match
+		if frappe.db.exists("Sales Invoice", invoice_number):
+			frappe.db.set_value("Sales Invoice", invoice_number,
+				"custom_waves_invoice_number", invoice_number)
+			frappe.db.commit()
+			return "linked", f"{invoice_number}: tagged existing invoice"
 
 	customer = _resolve_customer(inv)
 	if not customer:
@@ -132,12 +138,10 @@ def _create_one_invoice(inv, company):
 		for row in items:
 			doc.append("items", row)
 
-		# attach GST template, then run the same calc the UI runs
-		tax_template = _get_sales_tax_template(company)
-		if tax_template:
-			doc.taxes_and_charges = tax_template
-			doc.set_taxes()                         # pull template's tax rows onto the doc
-		doc.run_method("calculate_taxes_and_totals")  # the built-in the UI calls
+				# let ERPNext + india_compliance set the correct GST template & taxes
+		doc.run_method("set_missing_values")
+		doc.run_method("set_taxes")
+		doc.run_method("calculate_taxes_and_totals")
 
 		doc.flags.ignore_permissions = True
 		doc.insert()
@@ -429,7 +433,7 @@ def create_records(log_name):
 		created, failed, fail_lines = 0, 0, []
 		for inv in records:
 			outcome, msg = _create_one_invoice(inv, company)
-			if outcome in ("submitted", "draft"):
+			if outcome in ("submitted", "draft", "linked"):
 				created += 1
 			elif outcome == "skipped" and "already imported" in msg:
 				created += 1   # already exists = counts as created
