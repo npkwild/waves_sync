@@ -93,7 +93,7 @@
   "modified": "2026-07-02 16:03:15.492687",
   "module": null,
   "name": "Sales Invoice-custom_waves_invoice_number",
-  "no_copy": 0,
+  "no_copy": 1,
   "non_negative": 0,
   "options": null,
   "permlevel": 0,
