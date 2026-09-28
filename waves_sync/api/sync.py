@@ -139,6 +139,13 @@ def _create_one_invoice(inv, company):
 			doc.append("items", row)
 
 				# let ERPNext + india_compliance set the correct GST template & taxes
+		sales_person_name = (inv.get("sales_person_name") or "").strip()
+
+		if sales_person_name:
+			doc.append("sales_team", {
+				"sales_person": sales_person_name,
+				"allocated_percentage": 100
+			})
 		doc.run_method("set_missing_values")
 		doc.run_method("set_taxes")
 		doc.run_method("calculate_taxes_and_totals")
