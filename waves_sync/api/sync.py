@@ -362,6 +362,51 @@ def si_autoname(doc, method=None):
         doc.name = waves_no
     else:
         doc.name = make_autoname(doc.naming_series or "ACC-SINV-.YYYY.-")
+
+def _run_invoice_creation(log_name):
+	"""Background job: create Sales Invoices for every row in the log's sales file."""
+	log = frappe.get_doc("Waves Sync Log", log_name)
+	content = _read_file_content(log.file_attachment)
+	records, file_type, _p = _parse_waves_json(content)
+	if file_type != "Sales":
+		return
+
+	company = (
+		frappe.get_single("Waves Sync Settings").default_company
+		or frappe.db.get_single_value("Global Defaults", "default_company")
+	)
+
+	created, failed, fail_lines = 0, 0, []
+	for i, inv in enumerate(records):
+		outcome, msg = _create_one_invoice(inv, company)
+		if outcome in ("submitted", "draft", "linked"):
+			created += 1
+		elif outcome == "skipped" and "already imported" in msg:
+			created += 1
+		else:
+			failed += 1
+			if len(fail_lines) < 500:
+				fail_lines.append(msg)
+		if (i + 1) % 200 == 0:
+			frappe.db.set_value(
+				"Waves Sync Log", log_name, "error_log",
+				f"Progress: {i+1}/{len(records)} — {created} created, {failed} failed",
+				update_modified=False,
+			)
+			frappe.db.commit()
+
+	total = len(records)
+	report = (
+		f"Run at {frappe.utils.now()}\n"
+		f"Total: {total} | Created: {created} | Not created: {failed}\n"
+		f"{'-'*40}\n"
+		+ ("\n".join(fail_lines) if fail_lines else "All records created.")
+	)
+	log = frappe.get_doc("Waves Sync Log", log_name)
+	log.error_log = report[:100000]
+	log.status = "Success" if failed == 0 else "Partial"
+	log.save(ignore_permissions=True)
+	frappe.db.commit()
 	
 def _run_payment_creation(log_name):
 	"""Background job: create Payment Entries for every collection row in the log's file."""
@@ -437,33 +482,13 @@ def create_records(log_name):
 		frappe.throw(_("No company configured."))
 
 	if file_type == "Sales":
-		created, failed, fail_lines = 0, 0, []
-		for inv in records:
-			outcome, msg = _create_one_invoice(inv, company)
-			if outcome in ("submitted", "draft", "linked"):
-				created += 1
-			elif outcome == "skipped" and "already imported" in msg:
-				created += 1   # already exists = counts as created
-			else:
-				failed += 1
-				fail_lines.append(msg)
-
-		total = len(records)
-		report = (
-			f"Run at {frappe.utils.now()}\n"
-			f"Total: {total} | Created: {created} | Not created: {failed}\n"
-			f"{'-'*40}\n"
-			+ ("\n".join(fail_lines) if fail_lines else "All records created.")
-		)
-		log.reload()
-		log.error_log = report[:100000]
-		log.status = "Success" if failed == 0 else "Partial"
-		log.save(ignore_permissions=True)
+		frappe.db.set_value("Waves Sync Log", log_name, "status", "Running")
 		frappe.db.commit()
-
-		return {
-			"summary": f"Created {created}/{total}. Not created: {failed}. See Error Log for details.",
-		}
+		frappe.enqueue(
+			"waves_sync.api.sync._run_invoice_creation",
+			queue="long", timeout=14400, log_name=log_name,
+		)
+		return {"summary": "Invoice creation started in the background — refresh for progress."}
 
 	# Collection -> background job (writes its own report to error_log)
 	frappe.db.set_value("Waves Sync Log", log_name, "status", "Running")
