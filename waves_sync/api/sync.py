@@ -119,6 +119,14 @@ def _create_one_invoice(inv, company):
 			"qty": qty,
 			"rate": taxable / qty if qty else taxable,     # per-unit net → +18% = gross_total
 		}
+		# Waves cd = cash discount %; recorded on the line, not deducted from the rate
+		cd = _to_num(line.get("cd"))
+		if cd > 0:
+			row["custom_cd_percentage"] = cd
+			row["custom_cd_amount"] = frappe.utils.flt(taxable * cd / 100, 2)
+			row["custom_discount_applied"] = 0
+			# price_list_rate = rate keeps discount_amount 0, else aizar_pipes resets the flag to 1
+			row["price_list_rate"] = row["rate"]
 		uom = (line.get("unit") or "").strip()
 		if uom and frappe.db.exists("UOM", uom):
 			row["uom"] = uom
