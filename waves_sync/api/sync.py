@@ -124,7 +124,7 @@ def _create_one_invoice(inv, company):
 		if cd > 0:
 			row["custom_cd_percentage"] = cd
 			row["custom_cd_amount"] = frappe.utils.flt(taxable * cd / 100, 2)
-			row["custom_discount_applied"] = 0
+			row["custom_discount_applied"] = 1
 			# price_list_rate = rate keeps discount_amount 0, else aizar_pipes resets the flag to 1
 			row["price_list_rate"] = row["rate"]
 		uom = (line.get("unit") or "").strip()
